@@ -1,0 +1,314 @@
+CREATE TABLE BOARD(
+	`x` TINYINT(4) NOT NULL,
+	`y` TINYINT(4) NOT NULL,
+	`pos` INTEGER NOT NULL,
+	`PIECE` VARCHAR(15) DEFAULT NULL,
+	 PRIMARY KEY(`pos`)
+);
+
+
+CREATE TABLE EMPTY_BOARD(
+	`x` TINYINT(4) NOT NULL,
+	`y` TINYINT(4) NOT NULL,
+	`pos` INTEGER NOT NULL,
+	`PIECE` VARCHAR(15) DEFAULT NULL,
+	 PRIMARY KEY(`pos`)
+);
+
+
+
+CREATE TABLE PLAYERS(
+	`USERNAME` VARCHAR(20) DEFAULT NULL,
+	`PIECE_COLOR` ENUM('B','W') NOT NULL,
+	`AUTH` VARCHAR(255) NOT NULL,
+	 PRIMARY KEY(`PIECE_COLOR`)
+);
+
+CREATE TABLE GAME_STATUS(
+	`STATUS` ENUM('NOT ACTIVE','INITIALIZED','STARTED','ENDED','ABORDED') NOT NULL DEFAULT 'NOT ACTIVE',
+	`P_TURN` ENUM('W','B') DEFAULT NULL,
+	`RESULT` ENUM('W','B') DEFAULT NULL,
+	`LAST_ACTION` TIMESTAMP NULL DEFAULT NULL
+);
+
+CREATE TABLE DICE_HISTORY(
+	`ID` INTEGER NOT NULL AUTO_INCREMENT,
+	`USERNAME` VARCHAR(20) DEFAULT NULL,
+	`DICE 1` TINYINT(1) DEFAULT NULL,
+	`DICE 2` TINYINT(1) DEFAULT NULL,
+	`TIME` TIMESTAMP NULL DEFAULT NULL,
+	 PRIMARY KEY(`ID`)
+);
+
+DELIMITER $$
+CREATE
+	TRIGGER status_update BEFORE UPDATE 
+	ON GAME_STATUS
+	FOR EACH ROW BEGIN
+		SET NEW.LAST_ACTION= NOW();
+	END $$
+	DELIMITER ;
+	
+	
+DELIMITER $$
+CREATE PROCEDURE CLEAN_BOARD()
+BEGIN
+	REPLACE INTO BOARD SELECT * FROM EMPTY_BOARD;
+END $$
+	DELIMITER ;
+	
+	
+DELIMITER $$
+CREATE PROCEDURE CLEAN_ALL()
+BEGIN
+	DELETE FROM DICE_HISTORY;
+	DELETE FROM PLAYERS;
+END $$
+	DELIMITER ;	
+	
+
+	
+	
+	
+DELIMITER $$
+CREATE procedure movePiece(pos_old  INTEGER,pos_new INTEGER)
+BEGIN
+	DECLARE pce ,newpiece ,test , onepiece CHAR(15) ;
+
+SELECT PIECE INTO pce FROM BOARD 
+WHERE pos = pos_old;
+
+SELECT LEFT(pce, LENGTH(pce)-1) INTO newpiece;
+SELECT RIGHT(pce, 1) INTO onepiece;
+
+UPDATE BOARD 
+SET PIECE=newpiece 
+WHERE pos = pos_old;
+
+SELECT LENGTH(PIECE) INTO test
+FROM BOARD
+WHERE pos = pos_new;
+
+
+
+ IF test IS NULL OR test=''  THEN
+        UPDATE BOARD 
+		SET PIECE=onepiece
+		WHERE pos = pos_new;
+      
+ELSE  
+		UPDATE BOARD 
+		SET PIECE=concat(PIECE,onepiece)
+		WHERE pos = pos_new;
+  END IF;
+END $$
+	DELIMITER ;
+
+	
+	
+DELIMITER $$
+CREATE
+	TRIGGER status_update2 AFTER INSERT 
+	ON players
+	FOR EACH ROW BEGIN
+		DECLARE len INTEGER;
+        SELECT COUNT(*) INTO len
+		FROM PLAYERS;
+        IF (len = 0 ) THEN
+			UPDATE game_status
+            SET STATUS = 'NOT ACTIVE',P_TURN=NULL;
+		ELSEIF (len = 1) THEN
+			UPDATE game_status
+            SET STATUS = 'INITIALIZED',P_TURN=NULL;
+		ELSEIF (len = 2) THEN
+			UPDATE game_status
+            SET STATUS = 'STARTED';
+		END IF;
+	END $$
+	DELIMITER ;
+	
+	
+	
+DELIMITER $$
+CREATE
+	TRIGGER status_update3 AFTER DELETE 
+	ON players
+	FOR EACH ROW BEGIN
+		DECLARE len INTEGER;
+        SELECT COUNT(*) INTO len
+		FROM PLAYERS;
+        IF (len = 0 ) THEN
+			UPDATE game_status
+            SET STATUS = 'NOT ACTIVE',P_TURN=NULL;
+		ELSEIF (len = 1) THEN
+			UPDATE game_status
+            SET STATUS = 'INITIALIZED',P_TURN=NULL;
+		ELSEIF (len = 2) THEN
+			UPDATE game_status
+            SET STATUS = 'STARTED';
+		END IF;
+	END $$
+	DELIMITER ;
+	
+
+	DELIMITER $$
+CREATE
+	TRIGGER dice_update2 BEFORE INSERT 
+	ON DICE_HISTORY
+	FOR EACH ROW BEGIN
+		SET NEW.TIME= NOW();
+	END $$
+	DELIMITER ;
+	
+	
+	
+	
+	
+	
+	
+	
+DELIMITER $$	
+CREATE PROCEDURE `first_next_dices`()
+BEGIN
+		DECLARE stat,pl1,pl2 char(255);
+        DECLARE p1_zaria1,p1_zaria2,p2_zaria1,p2_zaria2 tinyint(1);
+		DECLARE sum_dice1, sum_dice2 tinyint(2);
+        DECLARE p1_color,p2_color char(255);
+        DECLARE turn char(1);
+        
+        SELECT `STATUS` INTO stat
+		FROM game_status;
+        
+        SELECT `P_TURN` INTO turn
+        FROM game_status;
+        
+		SELECT `USERNAME` INTO pl1
+        FROM players
+        WHERE PIECE_COLOR = 'W';
+
+		SELECT `USERNAME` INTO pl2
+        FROM players
+        WHERE PIECE_COLOR = 'B';
+        
+        SELECT `PIECE_COLOR` INTO p1_color
+        FROM players
+        WHERE `USERNAME` = pl1;
+        
+        SELECT `PIECE_COLOR` INTO p2_color
+        FROM players
+        WHERE `USERNAME` = pl2;
+        
+       
+        
+        IF (stat = "STARTED" AND turn IS NULL ) THEN
+				 SELECT FLOOR(RAND()*(6-1+1)) + 1 INTO p1_zaria1;
+				 SELECT FLOOR(RAND()*(6-1+1)) + 1 INTO p1_zaria2;
+        
+				SELECT FLOOR(RAND()*(6-1+1)) + 1 INTO p2_zaria1;
+				SELECT FLOOR(RAND()*(6-1+1)) + 1 INTO p2_zaria2;
+                
+				INSERT INTO dice_history(`USERNAME`,`DICE1`,`DICE2`)
+					VALUES(pl1,p1_zaria1,p1_zaria2);
+                
+				INSERT INTO dice_history(`USERNAME`,`DICE1`,`DICE2`)
+					VALUES(pl2,p2_zaria1,p2_zaria2); 
+                    
+                SELECT p1_zaria1 + p1_zaria2 INTO sum_dice1;
+				SELECT p2_zaria1 + p2_zaria2 INTO sum_dice2;
+					IF(sum_dice1>sum_dice2) THEN
+						UPDATE game_status
+                        SET P_TURN = p1_color;
+                    ELSE
+						UPDATE game_status
+                        SET P_TURN = p2_color;
+                        END IF;
+		 ELSEIF (stat = "STARTED" AND turn='B' ) THEN	
+			SELECT FLOOR(RAND()*(6-1+1)) + 1 INTO p2_zaria1;
+			SELECT FLOOR(RAND()*(6-1+1)) + 1 INTO p2_zaria2;
+			INSERT INTO dice_history(`USERNAME`,`DICE1`,`DICE2`)
+					VALUES(pl2,p2_zaria1,p2_zaria2);
+		 ELSEIF (stat = "STARTED" AND turn='W' ) THEN	
+			SELECT FLOOR(RAND()*(6-1+1)) + 1 INTO p1_zaria1;
+			SELECT FLOOR(RAND()*(6-1+1)) + 1 INTO p1_zaria2;
+			INSERT INTO dice_history(`USERNAME`,`DICE1`,`DICE2`)
+					VALUES(pl1,p1_zaria1,p1_zaria2);
+		END IF;
+	END
+	
+
+	
+	
+DELIMITER $$
+CREATE PROCEDURE get_last_dice()
+BEGIN
+	select * from dice_history
+	order by id desc limit 1;
+END $$
+	DELIMITER ;	
+	
+	
+	
+DELIMITER $$
+CREATE PROCEDURE change_turn()
+BEGIN
+	DECLARE turn char(1);
+    SELECT P_TURN INTO turn FROM game_status;
+    IF (turn = 'W') THEN
+		UPDATE game_status
+        SET P_TURN = 'B';
+	ELSE
+		UPDATE game_status
+        SET P_TURN = 'W';
+    END IF;
+END $$
+	DELIMITER ;	
+	
+	
+	
+	
+	
+
+
+DELIMITER $$
+CREATE PROCEDURE `DiceAZero`()
+BEGIN
+	DECLARE pid INTEGER;
+	
+    select ID INTO pid
+	from dice_history
+	order by ID desc limit 1;
+    
+    UPDATE dice_history
+    SET DICE1 = 0
+    WHERE ID = pid;
+  
+END $$
+
+
+DELIMITER $$
+CREATE PROCEDURE `DiceBZero`()
+BEGIN
+	DECLARE pid INTEGER;
+	
+    select ID INTO pid
+	from dice_history
+	order by ID desc limit 1;
+    
+    UPDATE dice_history
+    SET DICE2 = 0
+    WHERE ID = pid;
+  
+END $$
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

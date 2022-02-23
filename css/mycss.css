@@ -1,0 +1,7 @@
+body { background: #e5e5e5 !important; } 
+
+#Shadowdivs{box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);}
+.white{background-color: cornsilk; color: black; font-weight: bolder;}
+.black{background-color: dimgray; color: black; font-weight: bolder;}
+h3,h4{padding: 5px;}
+#alert{display: none;}

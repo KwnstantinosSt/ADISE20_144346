@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Backgammon - Flat</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="icon" type="image/png" href="favicon/backgammon.png"/>
+  <link rel="stylesheet" href="css/mycss.css">
+  <script src="js/myjs.js"></script> 
+</head>
+<body>
+    <div class="container p-3 my-3 bg-dark text-white text-center" id="Shadowdivs">
+        <h1><b><i>Backgammon - Flat</i></b></h1><br>
+        <p>Backgammon is one of the oldest known board games. Its history can be traced back nearly 5,000 years to archaeological discoveries in Mesopotamia.It is a two-player game where each player has fifteen pieces that move between twenty-four triangles according to the roll of two dice. The objective of the game is to be first to bear off, i.e. move all fifteen checkers off the board. Backgammon is a member of the tables family, one of the oldest classes of board games. </p>
+        <p>Backgammon involves a combination of strategy and luck (from rolling dice). While the dice may determine the outcome of a single game, the better player will accumulate the better record over a series of many games. With each roll of the dice, players must choose from numerous options for moving their checkers and anticipate possible counter-moves by the opponent. The optional use of a doubling cube allows players to raise the stakes during the game. </p>
+      </div>
+      <div class="container">
+      <hr>
+    </div>
+      <div class="container p-3 my-3 border text-center" id="Shadowdivs">
+        <h1><i>The Board</i></h1><br>
+        <p><em><b>Tip 1 :</b> </em><small>To move across the board enter values <b>1-24 (White player)</b> or <b>24-1 (Black player)</b>.</small></p></small>
+        <small><p><em><b>Tip 2 :</b> </em><small>Number "1" position of the board is the bottom right side and number "24" on the upper right side.</small></p>
+        <p><strong>Note : </strong><small>Double dices does not work at this time.Acts as normal dices. </small></p>
+      </div>
+      <div class="container">
+        <hr>
+      </div>
+      <div class="container p-3 my-3 border text-center" id="Shadowdivs">
+          <div class="table-responsive-sm">
+
+            <table class="table" id="nums">
+                <thead class="thead-dark"> 
+                    <tr>
+                        <th>13</th>
+                        <th>14</th>
+                        <th>15</th>
+                        <th>16</th>
+                        <th>17</th>
+                        <th>18</th>
+                        <th>19</th>
+                        <th>20</th>
+                        <th>21</th>
+                        <th>22</th>
+                        <th>23</th>
+                        <th>24</th>
+                    </tr>
+                </thead>
+            </table>
+
+        <table class="table table-bordered" id="board">
+            <tr>
+                <td class="white" id="13">13</td>
+                <td class="black" id="14">14</td>
+                <td class="white" id="15">15</td>
+                <td class="black" id="16">16</td>
+                <td class="white" id="17">17</td>
+                <td class="black" id="18">18</td>
+                <td class="white" id="19">19</td>
+                <td class="black" id="20">20</td>
+                <td class="white" id="21">21</td>
+                <td class="black" id="22">22</td>
+                <td class="white" id="23">23</td>
+                <td class="black" id="24">24</td>
+              </tr>
+              <tr>
+                <td class="black" id="12">12</td>
+                <td class="white" id="11">11</td>
+                <td class="black" id="10">10</td>
+                <td class="white" id="9">9</td>
+                <td class="black" id="8">8</td>
+                <td class="white" id="7">7</td>
+                <td class="black" id="6">6</td>
+                <td class="white" id="5">5</td>
+                <td class="black" id="4">4</td>
+                <td class="white" id="3">3</td>
+                <td class="black" id="2">2</td>
+                <td class="white" id="1">1</td>
+              </tr>
+        </table>
+
+        <table class="table" id="nums">
+            <thead class="thead-dark"> 
+                <tr>
+                    <th>12</th>
+                    <th>11</th>
+                    <th>10</th>
+                    <th>09</th>
+                    <th>08</th>
+                    <th>07</th>
+                    <th>06</th>
+                    <th>05</th>
+                    <th>04</th>
+                    <th>03</th>
+                    <th>02</th>
+                    <th>01</th>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+    </div>
+    <div class="container p-3 my-3 border text-left" id="Shadowdivs">
+        <h3 class="d-inline">Player: </h3><h4 class="d-inline" id="playerName">Null </h4>
+        <h3 class="d-inline">|</h3>
+        <h3 class="d-inline">Player Turn: </h3> <h4 class="d-inline" id="playerTurn">Null </h4>
+        <h3 class="d-inline">|</h3>
+        <h3 class="d-inline">Game Status: </h3> <h4 class="d-inline" id="gameStatus">Not Active </h4>
+        <br><br>
+        <h3 class="d-inline">Dart 1: </h3> <h4 class="d-inline" id="dart1">0</h4>
+        <h3 class="d-inline">|</h3>
+        <h3 class="d-inline">Dart 2: </h3> <h4 class="d-inline" id="dart2">0</h4>
+    </div>
+    <div class="container p-3 my-3 border text-left " id="Shadowdivs">
+
+        <div class="input-group input-group-sm mb-3 form-inline">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-sm"><strong>Username:</strong></span>
+            </div>
+                <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" id="username">
+          </div>
+         
+          <div class="input-group-prepend pl-5">
+            <label for="sellist1"><strong>Color:</strong> </label>
+            <select class="form-control ml-1" id="selectedColor" name="sellist1">
+              <option value="W">White</option>
+              <option value="B">Black</option>
+            </select>
+       </div>
+       <div class="container text-center pt-3">
+       <button type="button" class="btn btn-dark ml-4" id="startGame">Enter Game</button>
+       <button type="button" class="btn btn-dark ml-4" id="refresh">End turn</button>
+       <button type="button" class="btn btn-dark ml-4" id="resetGame">Reset Game</button>
+        </div>
+
+    </div>
+    <div class="container">
+    <div class="alert alert-success alert-dismissible fade show" id="alert">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong id="alerttext">Success!</strong>
+      </div>
+    </div>
+
+    <div id="moves">
+
+    <div class="container p-3 my-3 border text-left " id="Shadowdivs">
+
+      <div class="input-group input-group-sm mb-3 form-inline">
+          <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-sm"><strong>Old Position:</strong></span>
+          </div>
+              <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" id="oldPos">
+        
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-sm"><strong>New Position:</strong></span>
+      </div>
+          <input type="text" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" id="newPos">
+    </div>
+    <div class="container text-center pt-1">
+      <button type="button" class="btn btn-dark ml-4" id="doMove">Do Move</button>
+       </div>
+     </div>
+
+    </div>
+    
+
+    <div class="container text-right">
+    <footer><small><i> 	&#169;2020 Kwnstantinos Stougiannou</i></small></footer>
+</div>
+</body>
+</html>
